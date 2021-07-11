@@ -2,17 +2,15 @@ use warp::Filter;
 
 #[tokio::main]
 async fn main() {
-    // 注册filter
-    let hello_path_echo = warp::any()
-        .and(warp::path!("hello_pa"/ String))
-        .map(|str:String| format!("hello {}", str));
-
-    let hello = warp::any()
-        .and(warp::path("hello"))
-        .map(||format!("hello"));
+    let hi = warp::path("hello")
+        .and(warp::path::param())
+        .and(warp::header("user-agent"))
+        .map(|param: String, agent: String| {
+            format!("Hello {}, whose agent is {}", param, agent)
+        });
 
     // 注册全部路由
-    let route = hello.or(hello_path_echo);
+    let route = hi;
 
     // 启动web
     warp::serve(route)
